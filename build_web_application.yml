@@ -1,0 +1,54 @@
+
+- name: configure password-less authentication for node B node C
+  hosts: all
+  strategy: linear
+  
+  tasks:
+    - name: configure password-less authentication for node B node C
+      include_tasks: tasks/configure_password_less_authentication.yml
+      tags:
+        - configure_password_less_authentication
+
+- name: configure inbound firewall rules on web application devices
+  hosts: all
+  strategy: linear
+  
+  tasks:
+    - name: configure inbound firewall rules on web application devices
+      include_tasks: tasks/configure_inbound_firewall_rules.yml
+      tags:
+        - configure_inbound_firewall_rules
+
+- name: deploy and configure nginx on node B and node C
+  hosts: all
+  strategy: linear
+  
+  tasks:
+    - name: deploy and configure nginx on node B and node C
+      include_tasks: tasks/deploy_and_configure_nginx.yml
+      tags:
+        - deploy_and_configure_nginx
+
+  handlers:
+    - name: restart nginx service after configuration change
+      listen: deploy_and_configure_nginx
+      service: 
+        name: nginx
+        state: restarted
+
+- name: deploy and configure haproxy on node A
+  hosts: all
+  strategy: linear
+  
+  tasks:
+    - name: deploy and configure haproxy on node A
+      include_tasks: tasks/deploy_and_configure_haproxy.yml
+      tags:
+        - deploy_and_configure_haproxy
+
+  handlers:
+    - name: restart haproxy service after configuration change
+      listen: deploy_and_configure_haproxy
+      service:
+        name: haproxy
+        state: restarted

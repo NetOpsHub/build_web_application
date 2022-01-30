@@ -1,0 +1,39 @@
+
+- name: configure inbound firewall rules on web application devices
+  shell: "{{item}}"
+  with_items: "{{firewall_rules}}"
+  when: inventory_hostname is in(groups.web_application_devices)
+  tags:
+    - configure_inbound_firewall_rules
+
+- name: collect configuration backup for web application devices
+  shell: iptables-save
+  register: firewall_configuration_backup
+  when: inventory_hostname is in(groups.web_application_devices)
+  tags:
+    - configure_inbound_firewall_rules
+    
+- name: prepare directory to store log files
+  file:
+    path: /etc/iptables
+    state: directory
+  when: inventory_hostname is in(groups.web_application_devices)
+  tags:
+    - configure_inbound_firewall_rules
+    
+- name: copy configuration backup into log files
+  copy:
+    content: "{{firewall_configuration_backup.stdout}}"
+    dest: /etc/iptables/rules.v4
+  when: inventory_hostname is in(groups.web_application_devices)
+  tags:
+    - configure_inbound_firewall_rules
+    
+- name: restore firewall configuration after the reboot
+  cron:
+    name: configure_inbound_firewall_rules
+    special_time: reboot
+    job: sudo iptables-restore < /etc/iptables/rules.v4
+  when: inventory_hostname is in(groups.web_application_devices)
+  tags:
+    - configure_inbound_firewall_rules

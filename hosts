@@ -1,0 +1,14 @@
+
+[haproxy_devices]
+
+A ansible_host=52.66.210.163 private_ip=192.168.0.11
+
+[nginx_devices]
+
+B ansible_host=3.110.143.187 private_ip=192.168.0.12
+C ansible_host=3.109.182.227 private_ip=192.168.0.13
+
+[web_application_devices:children]
+
+haproxy_devices
+nginx_devices

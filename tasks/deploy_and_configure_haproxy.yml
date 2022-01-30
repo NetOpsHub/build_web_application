@@ -1,0 +1,18 @@
+
+- name: deploy haproxy on node A
+  apt:
+    update_cache: yes
+    name: haproxy
+    state: latest
+  when: inventory_hostname is in(groups.haproxy_devices)
+  tags:
+    - deploy_and_configure_haproxy
+    
+- name: modify haproxy configuration on haproxy devices
+  template:
+    src: templates/prepare_haproxy_configuration.jinja2
+    dest: /etc/haproxy/haproxy.cfg
+  when: inventory_hostname is in(groups.haproxy_devices)
+  notify: deploy_and_configure_haproxy
+  tags:
+    - deploy_and_configure_haproxy

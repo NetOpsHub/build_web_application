@@ -1,0 +1,5 @@
+
+ansible_user: ubuntu
+ansible_private_key_file: files/cloud_private_key.pem
+ansible_become: yes
+ansible_become_method: sudo

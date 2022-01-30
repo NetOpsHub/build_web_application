@@ -1,0 +1,26 @@
+
+- name: deploy nginx on node B and node C
+  apt:
+    update_cache: yes
+    name: nginx
+    state: latest
+  when: inventory_hostname is in(groups.nginx_devices)
+  tags:
+    - deploy_and_configure_nginx
+    
+- name: configure default webpage on nginx nodes
+  template:
+    src: templates/prepare_default_webpage.jinja2
+    dest: /var/www/html/index.html
+  when: inventory_hostname is in(groups.nginx_devices)
+  tags:
+    - deploy_and_configure_nginx
+    
+- name: modify nginx configuration on nginx nodes
+  template:
+    src: templates/prepare_nginx_configuration.jinja2
+    dest: /etc/nginx/conf.d/default.conf
+  when: inventory_hostname is in(groups.nginx_devices)
+  notify: deploy_and_configure_nginx
+  tags:
+    - deploy_and_configure_nginx
